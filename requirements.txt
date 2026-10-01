@@ -1,0 +1,8 @@
+# Libraries imported by MovieCorrelationProject4.ipynb.
+# The original run did not record library versions (the notebook metadata only records Python 3.12.4),
+# so versions are intentionally left unpinned.
+pandas
+numpy
+matplotlib
+seaborn
+jupyter
