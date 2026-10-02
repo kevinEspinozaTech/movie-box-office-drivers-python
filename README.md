@@ -65,12 +65,39 @@ These images were extracted directly from the notebook outputs. They were not re
 
 ![Correlation heatmap of numeric columns](images/correlation-heatmap.png)
 
+## v2: revised analysis (October 2026)
+
+[`movie-correlation-analysis-v2.ipynb`](movie-correlation-analysis-v2.ipynb) revisits the original notebook and fixes the issues listed under *Limitations*:
+
+- missing values are handled with complete cases instead of filling them with 0;
+- Pearson is compared with Spearman correlation;
+- the axes are labelled correctly, with log scales for money;
+- text columns are compared as groups instead of being correlated as category codes.
+
+It was executed end to end on the official Kaggle file. That file is identical to the one used in v1: same 7,668 rows, same missing-value counts, and the v1 method reproduces 0.750157 exactly.
+
+| Method | budget ↔ gross | votes ↔ gross |
+|---|---|---|
+| v1: Pearson, missing filled with 0 | 0.750 | 0.633 |
+| v2: Pearson, complete cases (5,436 films) | 0.740 | 0.615 |
+| v2: **Spearman**, complete cases | 0.694 | **0.746** |
+
+**What changed:** with rank-based correlation, **votes** are more associated with gross than budget is. Pearson had placed budget first because a few blockbusters dominate it. Among genres with at least 30 films, **Animation** has the highest median gross (≈ USD 189 M), followed by Action (≈ USD 71 M). All of these are associations, not causes.
+
+| Spearman correlation | Median gross by genre |
+|---|---|
+| ![Spearman heatmap](images/v2/spearman-heatmap.png) | ![Median gross by genre](images/v2/median-gross-by-genre.png) |
+
+![Budget vs gross, log scale](images/v2/budget-vs-gross-log.png)
+
 ## Repository structure
 
 ```
 .
-├── MovieCorrelationProject4.ipynb   # Original notebook (unchanged)
-├── images/                          # Charts extracted from the notebook's saved outputs
+├── MovieCorrelationProject4.ipynb        # Original guided notebook (unchanged)
+├── movie-correlation-analysis-v2.ipynb   # Revised analysis (executed, outputs saved)
+├── images/                               # v1 charts extracted from the original notebook
+│   └── v2/                               # Charts produced by the v2 notebook
 ├── requirements.txt
 └── README.md
 ```
@@ -80,10 +107,16 @@ These images were extracted directly from the notebook outputs. They were not re
 ```bash
 pip install -r requirements.txt
 # download movies.csv from Kaggle (see "Dataset and source") into this folder
-jupyter notebook MovieCorrelationProject4.ipynb
+jupyter notebook movie-correlation-analysis-v2.ipynb   # revised analysis
+jupyter notebook MovieCorrelationProject4.ipynb       # original guided notebook
 ```
 
-## Limitations
+The Kaggle download link in *Dataset and source* gives `movies.csv`. It is listed in `.gitignore` and not committed.
+
+## Limitations of the original notebook (v1)
+
+The v2 notebook addresses these points.
+
 
 - **Missing budgets are filled with 0.** About 28% of films therefore have a budget of 0, which distorts the budget correlations. Dropping or imputing those rows would be more appropriate.
 - The missing-value loop prints *fractions* (for example `0.283`) followed by a `%` sign. The actual share is 28.3%.
@@ -94,10 +127,8 @@ jupyter notebook MovieCorrelationProject4.ipynb
 
 ## Next steps
 
-- Handle missing budgets explicitly (drop or impute) and compare the results.
-- Use Spearman correlation and adjust for inflation for monetary values.
-- Replace the category-code correlation with group comparisons (for example gross by genre).
-- Pin library versions after a fresh, reproducible run.
+- Adjust monetary values for inflation before comparing films across decades.
+- Add a simple regression model with validation to quantify the drivers of gross.
 
 ## Credits
 
